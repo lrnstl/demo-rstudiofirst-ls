@@ -9,6 +9,16 @@ mean_ppm
 
 
 #more stuff here
+
+
+#load packages
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(RColorBrewer)
+library(datasets)
+install.packages("kableExtra")
+library(kableExtra)
 #hergoasdislghaos
 mtcars %>% 
   ggplot(aes(x = hp, y = mpg)) #aes()=aesthetic. horsepower on x-axis, mpg on y-axis
@@ -16,7 +26,7 @@ mtcars %>%
 mtcars %>% 
   ggplot(aes(x = hp, y = mpg)) + # '+' adds a layer to the graph, while %>% pipes together *different tasks*
   geom_point() # function for a scatterplot
-#to collor the points according to a different variable, go back into the aes function and add color
+#to color the points according to a different variable, go back into the aes function and add color
 
 mtcars %>% 
   ggplot(aes(x = hp, y = mpg, color = cyl)) + 
@@ -103,5 +113,41 @@ mtcars %>%
 
 ###geom_smooth(): adds a smooth trend line (various methods) (different from a normal trend line)
 
+#examples
 
+#lineplots
+# Inspect the data
+head(co2_df)
 
+# How does atmospheric CO2 concentration change over time?
+
+ggplot(co2_df, aes(x=date, y=concentration)) +
+  geom_point(alpha = 0.2) +
+  geom_line() + 
+  labs(x = "Date", y = "CO2 Concentration")
+
+##barplots
+# Inspect the data
+islands_df
+
+# What are the largest 12 island landmasses on Earth?
+
+ggplot(islands_df, aes(x = landmass, y = size)) +
+  geom_bar(stat = "identity") +
+  coord_flip() + 
+  labs(x = 'Landmass', y = 'Size')
+
+##histograms
+##life expectancy of continents from gapminder_2016 dataset
+#simple version
+ggplot(gapminder_2016) +
+  geom_histogram() +
+  labs(x = "Life Expectancy", y = "Count")
+install.packages("gapminder")
+library(gapminder)
+head(gapminder)
+arrange(gapminder, desc(year))
+install.packages("dslabs")
+library(dslabs)
+library(gapminder_2016)
+head(gapminder_2016)
