@@ -120,7 +120,10 @@ head(who_demo)
 #so how do we make 2 new columns out of 1 column title?
 #the names_sep argument identifies which parts of the info go into which column
 
-who_demo %>% pivot_longer(cols = !(country:year), # all columns aside from country to year
+who_demo %>% 
+  pivot_longer(cols = !(country:year), # all columns aside from country to year
                           names_to = c("gender", "age"), #new columns named age and gender
-                          names_sep = "_",#current gender and age are a single variable separated by _
+                          names_sep = "_", #current gender and age are a single variable separated by _
                           values_to = "cases") #use the cases column for the values
+#you can use ".value" in place of new column names to have the columns populate from the separated segments. See worksheet 4, question 2.3 solution
+
