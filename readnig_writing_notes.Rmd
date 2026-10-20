@@ -1,0 +1,29 @@
+---
+title: "reading_writing_notes"
+output: html_document
+date: "2026-10-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(here)
+#install.packages("here")
+```
+
+## Reading and Writing Data
+Go back over notes for calling data and setting relative file paths (so that files can be called without having to go through the root drive of your computer, and it works on other devices etc)
+
+
+```{r}
+getwd()
+```
+
+
+##the here function
+
+Other packages have a here(), so call specifically from the here package using here::here()
+
+```{r}
+
