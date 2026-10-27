@@ -1,0 +1,190 @@
+```{r}
+library(roxygen2)
+library(testthat)
+library(gapminder)
+library(palmerpenguins)
+#install.packages("roxygen2")
+#install.packages("testthat")
+#install.packages("palmerpenguins")
+```
+
+# Making functions in R
+From this lecture, students are expected to be able to:
+
+    Understand when to use a function
+
+    Build functions from scratch in R
+
+    Document functions using roxygen2
+
+    Test functions with the testthat package
+
+    Specify what to return in a function using return()
+
+Making functions can shorten code, make it easier to update
+
+make a function by creating a variable and listing arguments in it:
+
+```{r}
+my_function_name <- function(argument1, argument2, ...){
+  
+  # code that involves argument1, argument2, and so on
+  # and will calculate something to output
+  #
+  # by default, whatever is calculated in the last line of the code will be outputted. We can override this with a return() statement (more on that later)
+}
+```
+  
+at minimum, should have comments that describe what the function is doing, and what it outputs
+
+the curly brackets are important because everything inside is where you write your code
+
+We can search online for function code of pre-made functions (github)
+
+#function example: simulating rolling a number of d10s, returning sum of dice:
+```{r}
+#set.seed() creates a reproducible outcome, so if I put in set.seed(100), the roll_d10(2) argument will always output the same number
+roll_d10 <- function(num_dice) {
+    sum(sample(1:10, num_dice, replace=TRUE)) 
+}
+
+#num_dice: input number of dice here
+
+# Try rolling two dice
+roll_d10(2)
+
+# Try rolling four dice
+roll_d10(num_dice = 4)
+```
+#documenting the function
+
+You should document, at minimum: 
+  what the function does
+  the objects needed for input
+  what objects it will output
+  
+#roxygen2 package
+
+scaffolding for documenting functions
+creates tags
+
+Tags are placed immediately above the function definition.
+
+Designed for use when creating R packages, but also provide a standardized way to document a function
+
+Make it easy for you to migrate your function to an R package if need be (more on packages next week)
+
+Roxygen comment lines always start with #'
+
+ex:
+#' Description of function goes here
+#' 
+#' @param x description of the parameter input x goes here
+#' @param y description of the parameter input x goes here
+#' @returns description of the what function returns goes here
+
+name_of_function <- function(x, y) {
+  your function goes here!
+}
+
+Filled example:
+```{r}
+#' Title: Roll any number of 10 sided dice
+#' 
+#' Description: this function simulates rolling "num_dice" d10s and outputs the sum. No seed is used so random output every time
+#' @param num_dice a positive integer #the things i need to input
+#' @return the sum of the dice faces rolled
+  
+roll_d10 <- function(num_dice) { 
+    
+  
+    #sample num_dice numbers with replacement between 1 and 10, return sum
+    sum(sample(1:10, num_dice, replace=TRUE)) 
+    
+}
+
+roll_d10(2)
+```
+#testing
+Now we need to test this function, and idiot-proof it.
+standard test cases (ie rolling a positive integer of dice)
+edge cases (conditions that fall outside expected parameters. Ie, someone inputs 2.5 or 0)
+#using testthat
+Instead of manually coding test cases over and over, we can use functions from the testthat package in R. For example, when rolling no dice, we would expect the output to be 0. We can use the expect_equal() function to confirm this. The function won’t output anything if the output is as expected:
+```{r}
+expect_equal(roll_d10(0), 0)
+#or will throw an error if not: 
+expect_equal(roll_d10(0),2)
+```
+```{r}
+
+test_that("Rolling no dice equals 0", {
+  expect_equal(roll_d10(0), 0)
+})
+
+test_that("Rolling one die should be less than or equal to 10", {
+  expect_true(roll_d10(1) <= 10)
+})
+```
+#Error handling
+ex: roll_d10(2.5) shouldn't work, but it will still output a number
+If we want it to show an error instead, can use the stop() function
+```{r}
+#' Roll any number of d10 dice
+#' Simulates rolling `num_dice` number of dice and outputs the sum. 
+#'
+#' @param num_dice integer representing number of dice to be rolled
+#' @return the sum of the dice rolled
+  
+roll_d10 <- function(num_dice) { 
+  #throw error if num_dice is not an integer
+  #google is your friend ("how to test if number is integer in R")
+  if(num_dice%%1!=0){#divide num_dice, check if remainder is NOT 0 (and is therefore not an integer)
+    #can use && or || (and/or) to have multiple conditions
+    stop("num_dice must be an integer") #write error message to output when this error occurs
+  } 
+
+  
+    #if the num_dice is an integer, continue with the function:
+    sum(sample(1:10, num_dice, replace=TRUE)) #sample two numbers from one to 10 with replacement, return sum
+}
+roll_d10(num_dice = 2.5)
+```
+#Returns
+
+By default, your function will return the last thing computed in your function. However, we can return other items, like lists and vectors and dataframes using return().
+
+While perhaps redundant as the last line of code here is what we want to output, we could explicitly tell R what to output by:
+```{r}
+#' Roll any number of d10 dice
+#' Simulates rolling `num_dice` number of dice with 10 sides and outputs the sum. 
+#'
+#' @param num_dice integer representing number of dice to be rolled
+#' @param num_faces integer representing number of faces on each dice
+#' @return the sum of the dice rolled
+  
+roll_d10 <- function(num_dice, num_faces) { 
+  
+    # throw an error if num_dice (the input) is not an integer
+  
+    if(num_dice %% 1 != 0){ #if num_dice mod 1 is NOT 0
+      stop("num_dice must be an integer") #throw this error message and stop the function
+    }
+   # throw an error if num_dice (the input) is negative
+  
+    if(num_dice < 0){ #if num_dice is negative
+      stop("num_dice must be positive") #throw this error message and stop
+    }
+  
+    #sample two numbers from one to 10 with replacement, save as sum_dice
+    sum_dice <- sum(sample(1:num_faces, num_dice, replace=TRUE)) 
+    
+    #output the sum explicitly, or define some new output (can be named anything but here it's "out")
+     out <- c(num_dice, num_faces, sum_dice) #create a vector of what we want to return
+    names(out) <- c("num_dice", "num_faces", "sum_dice") #add descriptive names to the vector
+    
+    return(out)
+}
+roll_d10(5, num_faces=10)
+#note that the variables stored within the function will NOT be stored! if you want to access the variables, you can only call values from the return() output table
+```
